@@ -28,7 +28,7 @@ main = defaultMain $ testGroup ""
           let effectsExpected = [ DiscourseGet "/latest.json"
                                 , CacheRead
                                 , CacheWrite
-                                , GitterPost
+                                , HttpRequest "" ""
                                 ]
           assertEqual "effects" effectsExpected testIOResult_effects
     ]

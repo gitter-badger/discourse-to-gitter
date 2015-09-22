@@ -64,7 +64,8 @@ test-suite discourse-to-gitter-test
                       , tasty-hunit
                       , text
                       , time
-    default-extensions: RecordWildCards
+    default-extensions: OverloadedStrings
+                        RecordWildCards
     default-language:   Haskell2010
     ghc-options:        -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
     hs-source-dirs:     test

@@ -1,7 +1,6 @@
 {-# LANGUAGE  FlexibleInstances
             , GeneralizedNewtypeDeriving
             , MultiParamTypeClasses
-            , OverloadedStrings
   #-}
 
 module TestIO (Effect(..), TestIO, TestIOResult(..), execTestIO) where
@@ -18,7 +17,7 @@ import Control.Monad.RWS
 import Data.Aeson
 import Data.ByteString.Lazy as ByteString
 
-data Effect = CacheRead | CacheWrite | DiscourseGet String | GitterPost
+data Effect = CacheRead | CacheWrite | DiscourseGet String | HttpRequest String ByteString
     deriving (Eq, Show)
 
 newtype TestIO a = TestIO (RWST Config [Effect] [Topic] (LoggingT IO) a)
@@ -41,7 +40,9 @@ instance MonadDiscourse TestIO where
         fromRight = either fail return
 
 instance MonadHttpClient TestIO where
-    runHttpClient = error "unimplemented runHttpClient@TestIO"
+    runHttpClient url body = do
+        TestIO $ tell [HttpRequest url body]
+        return (mockGitter url body)
 
 decodeFile :: FromJSON a => FilePath -> IO a
 decodeFile filepath = do
@@ -71,3 +72,16 @@ testConfig =
     Config  { _config_gitterBaseUrl = "test://api.gitter.example.com/v1"
             , _config_room = RoomOneToOne "cblp"
             }
+
+mockGitter :: String -> ByteString -> ByteString
+mockGitter url req =
+    let err = error ("don't know how to mock " <> show url <> ":" <> show req)
+    in case url of
+        "test://api.gitter.example.com/v1/rooms" -> case req of
+            "{\"uri\":\"cblp\"}" -> "{\"id\":\"exampleroomid\"}"
+            _ -> err
+        "test://api.gitter.example.com/v1/room/exampleroomid/chatMessages" ->
+            case req of
+                "{\"text\":\"new topic!\"}" -> "{}"
+                _ -> err
+        _ -> err

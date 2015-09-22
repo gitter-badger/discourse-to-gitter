@@ -7,19 +7,19 @@ module TestIO (Effect(..), TestIO, TestIOResult(..), execTestIO) where
 
 -- package
 import Cache
+import Config
 import Discourse
 -- general
 import Control.Monad.Logger
-import Control.Monad.State
-import Control.Monad.Writer
+import Control.Monad.RWS
 import Data.Aeson
 import Data.ByteString.Lazy as ByteString
 
 data Effect = CacheRead | CacheWrite | DiscourseGet String | GitterPost
     deriving (Eq, Show)
 
-newtype TestIO a = TestIO (WriterT [Effect] (StateT [Topic] (LoggingT IO)) a)
-    deriving (Applicative, Functor, Monad, MonadLogger)
+newtype TestIO a = TestIO (RWST Config [Effect] [Topic] (LoggingT IO) a)
+    deriving (Applicative, Functor, Monad, MonadLogger, MonadReader Config)
 
 instance MonadCache [Topic] TestIO where
     loadDef def = TestIO $ do
@@ -55,9 +55,11 @@ data TestIOResult = TestIOResult  { testIOResult_effects  :: [Effect]
 execTestIO :: TestIO () -> IO TestIOResult
 execTestIO testAction = do
     let cache = []
-        TestIO writerAction = testAction
-        stateAction = execWriterT writerAction
-        loggingAction = runStateT stateAction cache
+        TestIO rwsAction = testAction
+        loggingAction = runRWST rwsAction testConfig cache
         ioAction = runStderrLoggingT loggingAction
-    (testIOResult_effects, testIOResult_cache) <- ioAction
+    ((), testIOResult_cache, testIOResult_effects) <- ioAction
     return TestIOResult{..}
+
+testConfig :: Config
+testConfig = undefined

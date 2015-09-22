@@ -1,6 +1,7 @@
 module Gitter where
 
 import Data.Aeson
+import Data.Aeson.TH
 import Data.Text
 
 type Resource = [Text]
@@ -10,6 +11,8 @@ type RoomId = Text
 data RoomUri = RoomOneToOne UserName | RoomRepo UserName RepoName
 data GitterAction = GitterPost Resource Value
 data RoomAction = SendChatMessage Text
+
+deriveFromJSON defaultOptions ''RoomUri
 
 withGitter :: GitterAction -> gitter ()
 withGitter = undefined

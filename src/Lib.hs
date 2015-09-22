@@ -4,6 +4,7 @@ module Lib where
 
 -- component
 import Cache
+import Config
 import Discourse
 import Gitter
 -- general
@@ -13,9 +14,6 @@ import            Control.Monad.Reader
 import            Data.Monoid
 import            Data.Text ( Text )
 import qualified  Data.Text as Text
-
-data Config = Config { _config_roomUri :: RoomUri }
-makeLenses ''Config
 
 detectNewTopics :: [Topic] -> [Topic] -> [Topic]
 detectNewTopics []   =

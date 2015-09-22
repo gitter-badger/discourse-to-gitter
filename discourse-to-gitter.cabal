@@ -30,7 +30,9 @@ library
                         TemplateHaskell
     default-language:   Haskell2010
     exposed-modules:    Cache
+                        Config
                         Discourse
+                        Gitter
                         Lib
     ghc-options:        -Wall -Werror
     hs-source-dirs:     src
@@ -40,9 +42,12 @@ executable discourse-to-gitter-exe
     hs-source-dirs:   app
     main-is:          Main.hs
     ghc-options:      -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
-    build-depends:    base
+    build-depends:    aeson
+                    , base
+                    , bytestring
                     , discourse-to-gitter
                     , monad-logger
+                    , mtl
     default-language: Haskell2010
 
 test-suite discourse-to-gitter-test

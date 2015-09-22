@@ -5,7 +5,7 @@ import TestIO
 -- package
 import Discourse
 import Lib
--- general
+-- global
 import Data.Time.Clock.POSIX
 import Test.Tasty
 import Test.Tasty.HUnit

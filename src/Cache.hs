@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor, MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveFunctor, MultiParamTypeClasses, UndecidableInstances #-}
 
 module Cache where
 
@@ -6,6 +6,8 @@ module Cache where
 import Discourse
 -- general
 import Control.Monad.Logger
+import Control.Monad.Reader
+import Control.Monad.RWS
 import Control.Monad.State
 import Control.Monad.Writer
 
@@ -41,5 +43,14 @@ instance (Monad m, MonadCache a m, Monoid w) => MonadCache a (WriterT w m) where
     loadDef = lift . loadDef
     save = lift . save
 
+instance (Monad m, Monoid w) => MonadCache s (RWST r w s m) where
+    loadDef _ = get
+    save = put
+
 instance (Monad m, MonadDiscourse m) => MonadDiscourse (FileCacheT m) where
     getLatest = lift getLatest
+
+instance MonadReader r m => MonadReader r (FileCacheT m) where
+    ask = lift ask
+    local f (FileCacheT g) = FileCacheT (local f . g)
+    reader = lift . reader

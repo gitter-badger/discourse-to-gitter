@@ -36,11 +36,12 @@ repostUpdates = do
     $logDebug ("newTopics = " <> showText newTopics)
     save latestTopics
 
-    roomUri <- view config_roomUri
+    let gitter = Gitter
+    room <- view config_room
     let message = "new topic!"
-    withGitter .
-        withRoom roomUri $
-            SendChatMessage message
+    withGitter gitter .
+        withRoom room $
+            sendChatMessage message
 
 showText :: Show a => a -> Text
 showText = Text.pack . show

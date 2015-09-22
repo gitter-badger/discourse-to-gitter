@@ -16,11 +16,13 @@ cabal-version:       >= 1.10
 library
     build-depends:      aeson
                       , base
+                      , bytestring
                       , errors
                       , lens
                       , lens-aeson
                       , monad-logger
                       , mtl
+                      , http-client
                       , text
                       , time
                       , unordered-containers
@@ -33,6 +35,7 @@ library
                         Config
                         Discourse
                         Gitter
+                        HttpClient
                         Lib
     ghc-options:        -Wall -Werror
     hs-source-dirs:     src

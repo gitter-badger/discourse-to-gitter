@@ -1,6 +1,7 @@
 {-# LANGUAGE  FlexibleInstances
             , GeneralizedNewtypeDeriving
             , MultiParamTypeClasses
+            , OverloadedStrings
   #-}
 
 module TestIO (Effect(..), TestIO, TestIOResult(..), execTestIO) where
@@ -9,6 +10,7 @@ module TestIO (Effect(..), TestIO, TestIOResult(..), execTestIO) where
 import Cache
 import Config
 import Discourse
+import Gitter
 -- general
 import Control.Monad.Logger
 import Control.Monad.RWS
@@ -56,10 +58,10 @@ execTestIO :: TestIO () -> IO TestIOResult
 execTestIO testAction = do
     let cache = []
         TestIO rwsAction = testAction
-        loggingAction = runRWST rwsAction testConfig cache
+        loggingAction = execRWST rwsAction testConfig cache
         ioAction = runStderrLoggingT loggingAction
-    ((), testIOResult_cache, testIOResult_effects) <- ioAction
+    (testIOResult_cache, testIOResult_effects) <- ioAction
     return TestIOResult{..}
 
 testConfig :: Config
-testConfig = undefined
+testConfig = Config { _config_room = RoomOneToOne "cblp" }

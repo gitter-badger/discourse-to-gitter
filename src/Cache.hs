@@ -22,18 +22,18 @@ instance MonadTrans FileCacheT where
     lift = error "unimplemented lift@FileCacheT"
 
 instance Functor m => Applicative (FileCacheT m) where
-    pure = undefined
-    (<*>) = undefined
+    pure = error "unimplemented pure@FileCacheT"
+    (<*>) = error "unimplemented (<*>)@FileCacheT"
 
 instance Functor m => Monad (FileCacheT m) where
-    (>>=) = undefined
+    (>>=) = error "unimplemented (>>=)@FileCacheT"
 
 instance Functor m => MonadCache a (FileCacheT m) where
-    loadDef = undefined
-    save = undefined
+    loadDef = error "unimplemented loadDef@FileCacheT"
+    save = error "unimplemented save@FileCacheT"
 
 instance Functor m => MonadLogger (FileCacheT m) where
-    monadLoggerLog = undefined
+    monadLoggerLog = error "unimplemented monadLoggerLog@FileCacheT"
 
 instance Monad m => MonadCache s (StateT s m) where
     loadDef _ = get

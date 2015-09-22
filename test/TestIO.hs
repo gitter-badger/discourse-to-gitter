@@ -11,6 +11,7 @@ import Cache
 import Config
 import Discourse
 import Gitter
+import HttpClient
 -- general
 import Control.Monad.Logger
 import Control.Monad.RWS
@@ -34,11 +35,13 @@ instance MonadCache [Topic] TestIO where
 instance MonadDiscourse TestIO where
     getLatest = TestIO $ do
         tell [DiscourseGet "/latest.json"]
-        liftIO $ do
-            jsonContent <- decodeFile "test/data/discourse/latest.json"
-            fromRight (decodeLatestResponse jsonContent)
+        jsonContent <- liftIO (decodeFile "test/data/discourse/latest.json")
+        fromRight (decodeLatestResponse jsonContent)
       where
         fromRight = either fail return
+
+instance MonadHttpClient TestIO where
+    runHttpClient = error "unimplemented runHttpClient@TestIO"
 
 decodeFile :: FromJSON a => FilePath -> IO a
 decodeFile filepath = do
@@ -64,4 +67,7 @@ execTestIO testAction = do
     return TestIOResult{..}
 
 testConfig :: Config
-testConfig = Config { _config_room = RoomOneToOne "cblp" }
+testConfig =
+    Config  { _config_gitterBaseUrl = "test://api.gitter.example.com/v1"
+            , _config_room = RoomOneToOne "cblp"
+            }

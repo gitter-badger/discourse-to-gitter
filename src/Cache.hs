@@ -4,6 +4,7 @@ module Cache where
 
 -- component
 import Discourse
+import HttpClient
 -- general
 import Control.Monad.Logger
 import Control.Monad.Reader
@@ -54,3 +55,6 @@ instance MonadReader r m => MonadReader r (FileCacheT m) where
     ask = lift ask
     local f (FileCacheT g) = FileCacheT (local f . g)
     reader = lift . reader
+
+instance MonadHttpClient m => MonadHttpClient (FileCacheT m) where
+    runHttpClient url body = lift $ runHttpClient url body

@@ -6,7 +6,7 @@ import Gitter
 import Control.Lens
 import Data.Aeson.TH
 
-data Config = Config { _config_room :: Room }
+data Config = Config { _config_gitterBaseUrl :: String, _config_room :: Room }
 makeLenses ''Config
 
 deriveFromJSON defaultOptions ''Config

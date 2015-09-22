@@ -1,4 +1,4 @@
-{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE ConstraintKinds, RecordWildCards #-}
 
 module Lib where
 
@@ -7,6 +7,7 @@ import Cache
 import Config
 import Discourse
 import Gitter
+import HttpClient
 -- general
 import            Control.Lens
 import            Control.Monad.Logger
@@ -26,6 +27,7 @@ type MonadRepost m =  ( MonadReader Config m
                       , MonadCache [Topic] m
                       , MonadDiscourse m
                       , MonadLogger m
+                      , MonadHttpClient m
                       )
 
 repostUpdates :: MonadRepost m => m ()
@@ -36,8 +38,9 @@ repostUpdates = do
     $logDebug ("newTopics = " <> showText newTopics)
     save latestTopics
 
-    let gitter = Gitter
     room <- view config_room
+    gitter_baseUrl <- view config_gitterBaseUrl
+    let gitter = Gitter { .. }
     let message = "new topic!"
     withGitter gitter .
         withRoom room $

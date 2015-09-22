@@ -22,7 +22,7 @@ library
                       , lens-aeson
                       , monad-logger
                       , mtl
-                      , http-client
+                      , wreq
                       , text
                       , time
                       , unordered-containers
